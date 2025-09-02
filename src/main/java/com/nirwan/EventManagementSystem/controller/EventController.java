@@ -7,6 +7,8 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -21,15 +23,17 @@ public class EventController {
     @Autowired
     private EventRepository eventRepository;
 
-    @PostMapping("/{username}")
-    public ResponseEntity<?> createEvent(@RequestBody Event event, @PathVariable String username) {
-        eventService.saveEvent(event, username);
+    @PostMapping("/createEvent")
+    public ResponseEntity<?> createEvent(@RequestBody Event event) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        eventService.saveEvent(event, authentication.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(event);
     }
 
-    @DeleteMapping("/{eventId}/{username}")
-    public ResponseEntity<?> deleteEvent(@PathVariable ObjectId eventId, @PathVariable String username) {
-        eventService.deleteEvent(eventId, username);
+    @DeleteMapping("/delete/{eventId}")
+    public ResponseEntity<?> deleteEvent(@PathVariable ObjectId eventId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        eventService.deleteEvent(eventId, authentication.getName());
         return ResponseEntity.noContent().build();
     }
 
@@ -49,6 +53,7 @@ public class EventController {
 
     @GetMapping("{eventId}")
     public ResponseEntity<?> getEventById(@PathVariable ObjectId eventId) {
+
         Optional<Event> event = eventRepository.findById(eventId);
         if (event.isPresent()) {
             return new ResponseEntity<>(event.get(), HttpStatus.OK);

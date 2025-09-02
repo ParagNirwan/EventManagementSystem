@@ -18,9 +18,6 @@ public class EventService {
     @Autowired
     private UserRepository userRepository;
 
-
-
-
     public void saveEvent(Event event, String username) {
         event.setEventCreationDate(LocalDateTime.now());
         eventRepository.save(event);
