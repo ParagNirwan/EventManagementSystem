@@ -8,6 +8,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Component
 public class UserService {
 
@@ -33,5 +36,14 @@ public class UserService {
 
     }
 
+    public List<User> getAll(){
+        return userRepository.findAll();
+    }
 
+
+    public void saveAdmin(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setUsertype("ADMIN");
+        userRepository.save(user);
+    }
 }
